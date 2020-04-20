@@ -10,18 +10,19 @@
 
 int cam_hgt = 0;
 int theta = 0;
+int stringAngle = 45;
 
 float armRotation = -75.;
 float t = 0.0;
 
 
-struct ballDistance {
+struct objectPoint {
     float dx;
     float dy;
 };
 
-struct ballDistance throwBall() {
-    struct ballDistance distance;
+struct objectPoint throwBall() {
+    struct objectPoint distance;
 
     float initHeight = 13.5;
     int alpha = 20;
@@ -34,15 +35,10 @@ struct ballDistance throwBall() {
     distance.dx = -(vx * t);
     distance.dy = initHeight + vy * t - g  * pow(t, 2) / 2;
 
-//    if (distance.dx > 45.5) {
-//        distance.dy = initHeight + vy * t - g  * pow(t, 2) / 2;
-//    } else {
-//        distance.dy = 0.5;
-
-//    }
-
     return distance;
 }
+
+
 
 //--Draws a grid of lines on the floor plane -------------------------------
 void drawFloor()
@@ -186,7 +182,7 @@ void drawCatapult(void) {
 
 void drawBoulder(void) {
 
-    struct ballDistance distance = throwBall();
+    struct objectPoint distance = throwBall();
 
     glPushMatrix();
         glTranslatef(4.75, 1.0, 0.25);
@@ -196,6 +192,60 @@ void drawBoulder(void) {
         glTranslatef(2.5 + distance.dx, distance.dy, 0.25);
         glColor3f(0.4, 0.4, 0.4);
         glutSolidSphere(1.75, 10.0, 10.0);
+    glPopMatrix();
+}
+
+void drawPendulum(void) {
+    //frame
+    glPushMatrix();
+        glTranslatef(5., 8., 0.);
+        glScalef(1.5, 14.0, 1.0);
+        glColor3f(0.5, 0.35, 0.1);
+        glutSolidCube(1.0);
+    glPopMatrix();
+
+    //top
+    glPushMatrix();
+        glTranslatef(5., 14.5, 2.5);
+        glScalef(1.5, 1.0, 5.0);
+        glColor3f(0.5, 0.35, 0.1);
+        glutSolidCube(1.0);
+    glPopMatrix();
+
+    //base
+    glPushMatrix();
+        glTranslatef(5., 0., 0.);
+        glScalef(6.0, 2.0, 2.0);
+        glColor3f(0.5, 0.35, 0.1);
+        glutSolidCube(1.0);
+    glPopMatrix();
+
+    //ring
+    glPushMatrix();
+        glTranslatef(5., 13.25, 3.5);
+        glRotatef(90, 0, 1, 0);
+        glColor3f(0.4, 0.4, 0.4);
+        glutSolidTorus(0.3, 0.6, 5., 15.0);
+    glPopMatrix();
+
+    //string
+
+    glPushMatrix();
+        glTranslatef(5., 12.75, 3.5);
+        glColor3f(0., 0., 0.);
+        glutSolidTorus(0.15, 0.3, 5., 15.0);
+    glPopMatrix();
+
+
+    glPushMatrix();
+        glTranslatef(5., 12.35, 3.5);
+        glRotatef(stringAngle, 0, 0, 1);
+        glTranslatef(-5., -12.35, -3.5);
+
+        glTranslatef(5., 12.35, 3.5);
+        glRotatef(90, 1, 0, 0);
+        glColor3f(0., 0., 0.);
+        glutSolidCylinder(0.1, 8., 8., 20.);
     glPopMatrix();
 }
 
@@ -230,10 +280,12 @@ void display(void)
     glColor3f(0.0, 1.0, 1.0);
 
     glPushMatrix();
-        glTranslatef(0., 0., -10.);
+        glTranslatef(10., 0., -18.);
         drawCatapult();
         drawBoulder();
     glPopMatrix();
+
+    drawPendulum();
 
     glFlush();
 }
