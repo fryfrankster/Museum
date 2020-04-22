@@ -7,14 +7,17 @@
 
 #include <cmath>
 #include <GL/freeglut.h>
+#include "loadTGA.h"
 
 int cam_hgt = 0;
 int theta = 0;
-int stringAngle = 45;
+int stringAngle = -38;
 
 float armRotation = -75.;
 float t = 0.0;
+bool change = true;
 
+GLuint txId[2];   //Texture ids
 
 struct objectPoint {
     float dx;
@@ -36,6 +39,19 @@ struct objectPoint throwBall() {
     distance.dy = initHeight + vy * t - g  * pow(t, 2) / 2;
 
     return distance;
+}
+
+//--------------------------------------------------------------------------------
+void loadTexture()
+{
+    glGenTextures(2, txId); 	// Create 2 texture ids
+
+    glBindTexture(GL_TEXTURE_2D, txId[0]);  //Use this texture
+    loadTGA("Marble.tga");
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);	//Set texture parameters
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+
+    glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
 }
 
 
@@ -61,7 +77,7 @@ void drawCatapult(void) {
     glPushMatrix();
         glTranslatef(0., 0., -5);
         glColor3f(0.4, 0.4, 0.4);
-        glutSolidCylinder(2.25, 0.75, 15.0, 30.0);
+        glutSolidCylinder(2.25, 0.75, 15.0, 30.0);        
     glPopMatrix();
 
     glPushMatrix();
@@ -249,12 +265,80 @@ void drawPendulum(void) {
     glPopMatrix();
 }
 
+void drawThrone(void) {
+    glPushMatrix();
+        glTranslatef(0., 5.75, 0.);
+        glScalef(6.5, 13., 1.0);
+        glColor3f(0.5, 0.35, 0.1);
+        glutSolidCube(1.0);
+    glPopMatrix();
+
+    glPushMatrix();
+        glTranslatef(0., 3.75, 3.);
+        glScalef(6.5, 1.0, 5.0);
+        glColor3f(0.5, 0.35, 0.1);
+        glutSolidCube(1.0);
+    glPopMatrix();
+
+    glPushMatrix();
+        glTranslatef(0., 1.25, 5.);
+        glScalef(6.5, 4.0, 1.0);
+        glColor3f(0.5, 0.35, 0.1);
+        glutSolidCube(1.0);
+    glPopMatrix();
+
+    glPushMatrix();
+        glTranslatef(0., 12.25, -0.5);
+        glScalef(1., 1.5, 1.);
+        glutSolidCylinder(3.25, 1., 20., 20.);
+    glPopMatrix();
+
+}
+
+void drawFlooring(void) {
+//    glBindTexture(GL_TEXTURE_2D, txId[0]);
+//    glBegin(GL_QUADS);
+//        glNormal3f(0.0, 1.0, 0.0);   //Facing +y (Top side)
+//        glTexCoord2f(0.0, 0.0); glVertex3f(1., 1., 5.);
+//        glTexCoord2f(1.0, 0.0); glVertex3f(5., 1., 5.);
+//        glTexCoord2f(1.0, 1.0); glVertex3f(5., 1., 1.);
+//        glTexCoord2f(0.0, 1.0); glVertex3f(1., 1., 1.);
+//    glEnd();
+
+    const int n = 7; //Array size
+    float vx[n] = {-40., 40., 40., 25., -25., -40., -40.};
+    float vy[n] = {0};
+    float vz[n] = {15., 15., -60., -75., -75., -60., 15.};
+    glColor3f(1., 0., 0.);
+    glBegin(GL_POLYGON);
+         for (int i = 0; i < n; i++)
+         glVertex3f(vx[i], vy[i], vz[i]);
+    glEnd();
+}
+
 void myTimer(int value) {
+
+    //Releasing the boulder from the catapult
     if (armRotation < -15) {
         armRotation += 3.5;
     } else {
         t += .05;
     }
+
+    //Changing the swinging of the pendulum
+    if (change) {
+        stringAngle += 4.;
+        if (stringAngle > 39) {
+            change = false;
+        }
+    } else {
+        stringAngle -= 4.;
+        if (stringAngle < -39) {
+            change = true;
+        }
+    }
+
+
     glutPostRedisplay();
     glutTimerFunc(60, myTimer, 0);
 }
@@ -279,13 +363,21 @@ void display(void)
     glEnable(GL_LIGHTING);			//Enable lighting when drawing the teapot
     glColor3f(0.0, 1.0, 1.0);
 
+    drawFlooring();
+
     glPushMatrix();
-        glTranslatef(10., 0., -18.);
+        glTranslatef(-25., 2.25, -10.);
+        glRotatef(-90, 0, 1, 0);
         drawCatapult();
         drawBoulder();
     glPopMatrix();
 
-    drawPendulum();
+//    glPushMatrix();
+//        glTranslatef(25., 0., -18.);
+//        drawPendulum();
+//    glPopMatrix();
+
+//    drawThrone();
 
     glFlush();
 }
@@ -302,6 +394,10 @@ void special(int key, int x, int y) {
 //----------------------------------------------------------------------
 void initialize(void)
 {
+//    loadTexture();
+//    glEnable(GL_TEXTURE_2D);
+
+
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
     glEnable(GL_LIGHTING);		//Enable OpenGL states
