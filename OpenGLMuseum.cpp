@@ -296,24 +296,27 @@ void drawThrone(void) {
 }
 
 void drawFlooring(void) {
-//    glBindTexture(GL_TEXTURE_2D, txId[0]);
-//    glBegin(GL_QUADS);
-//        glNormal3f(0.0, 1.0, 0.0);   //Facing +y (Top side)
-//        glTexCoord2f(0.0, 0.0); glVertex3f(1., 1., 5.);
-//        glTexCoord2f(1.0, 0.0); glVertex3f(5., 1., 5.);
-//        glTexCoord2f(1.0, 1.0); glVertex3f(5., 1., 1.);
-//        glTexCoord2f(0.0, 1.0); glVertex3f(1., 1., 1.);
-//    glEnd();
-
-    const int n = 7; //Array size
-    float vx[n] = {-40., 40., 40., 25., -25., -40., -40.};
-    float vy[n] = {0};
-    float vz[n] = {15., 15., -60., -75., -75., -60., 15.};
-    glColor3f(1., 0., 0.);
-    glBegin(GL_POLYGON);
-         for (int i = 0; i < n; i++)
-         glVertex3f(vx[i], vy[i], vz[i]);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, txId[0]);
+    glBegin(GL_QUADS);
+        glNormal3f(0.0, 1.0, 0.0);   //Facing +y (Top side)
+        glTexCoord2f(0.0, 0.0); glVertex3f(1., 1., 20.);
+        glTexCoord2f(1.0, 0.0); glVertex3f(20., 1., 20.);
+        glTexCoord2f(1.0, 1.0); glVertex3f(20., 1., 1.);
+        glTexCoord2f(0.0, 1.0); glVertex3f(1., 1., 1.);
     glEnd();
+
+    glDisable(GL_TEXTURE_2D);
+
+//    const int n = 7; //Array size
+//    float vx[n] = {-40., 40., 40., 25., -25., -40., -40.};
+//    float vy[n] = {0};
+//    float vz[n] = {15., 15., -60., -75., -75., -60., 15.};
+//    glColor3f(1., 0., 0.);
+//    glBegin(GL_POLYGON);
+//         for (int i = 0; i < n; i++)
+//         glVertex3f(vx[i], vy[i], vz[i]);
+//    glEnd();
 }
 
 void myTimer(int value) {
@@ -394,8 +397,7 @@ void special(int key, int x, int y) {
 //----------------------------------------------------------------------
 void initialize(void)
 {
-//    loadTexture();
-//    glEnable(GL_TEXTURE_2D);
+    loadTexture();
 
 
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
