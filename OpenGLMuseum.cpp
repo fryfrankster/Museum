@@ -18,6 +18,8 @@ float t = 0.0;
 bool change = true;
 
 GLuint txId[2];   //Texture ids
+float angle=0, look_x, look_z=-1., eye_x, eye_z;  //Camera parameters
+
 
 struct objectPoint {
     float dx;
@@ -57,20 +59,6 @@ void loadTexture()
 
 
 //--Draws a grid of lines on the floor plane -------------------------------
-void drawFloor()
-{
-    glColor3f(0., 0.5,  0.);			//Floor colour
-
-    for(int i = -50; i <= 50; i ++)
-    {
-        glBegin(GL_LINES);			//A set of grid lines on the xz-plane
-            glVertex3f(-50, -0.75, i);
-            glVertex3f(50, -0.75, i);
-            glVertex3f(i, -0.75, -50);
-            glVertex3f(i, -0.75, 50);
-        glEnd();
-    }
-}
 
 void drawCatapult(void) {
     //Four wheels
@@ -296,27 +284,64 @@ void drawThrone(void) {
 }
 
 void drawFlooring(void) {
+
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, txId[0]);
     glBegin(GL_QUADS);
         glNormal3f(0.0, 1.0, 0.0);   //Facing +y (Top side)
-        glTexCoord2f(0.0, 0.0); glVertex3f(1., 1., 20.);
-        glTexCoord2f(1.0, 0.0); glVertex3f(20., 1., 20.);
-        glTexCoord2f(1.0, 1.0); glVertex3f(20., 1., 1.);
-        glTexCoord2f(0.0, 1.0); glVertex3f(1., 1., 1.);
+        glTexCoord2f(0.0, 0.0); glVertex3f(-55., -1., 0.);
+        glTexCoord2f(3.0, 0.0); glVertex3f(55., -1., 0.);
+        glTexCoord2f(3.0, 2.0); glVertex3f(55., -1., -60.);
+        glTexCoord2f(0.0, 2.0); glVertex3f(-55., -1., -60.);
     glEnd();
-
     glDisable(GL_TEXTURE_2D);
 
-//    const int n = 7; //Array size
-//    float vx[n] = {-40., 40., 40., 25., -25., -40., -40.};
-//    float vy[n] = {0};
-//    float vz[n] = {15., 15., -60., -75., -75., -60., 15.};
-//    glColor3f(1., 0., 0.);
-//    glBegin(GL_POLYGON);
-//         for (int i = 0; i < n; i++)
-//         glVertex3f(vx[i], vy[i], vz[i]);
+//    glEnable(GL_TEXTURE_2D);
+//    glBindTexture(GL_TEXTURE_2D, txId[0]);
+//    glBegin(GL_QUADS);
+//        glNormal3f(0.0, 1.0, 0.0);   //Facing +y (Top side)
+//        glVertex3f(-50., -1., 20.);
+//        glVertex3f(-50., -1., -50.);
+//        glVertex3f(-50., 25., 20.);
+//        glVertex3f(-50., 25., -50.);
 //    glEnd();
+//    glDisable(GL_TEXTURE_2D);
+
+
+}
+
+void drawWalls() {
+    glBegin(GL_QUADS);
+
+    ////////////////////// BACK WALL ///////////////////////
+
+    glTexCoord2f(0.0, 2.0); glVertex3f(-55, 25, -60);
+    glTexCoord2f(0.0, 0.0); glVertex3f(-55, -1, -60);
+    glTexCoord2f(12.0, 0.0); glVertex3f(55, -1, -60);
+    glTexCoord2f(12.0, 2.0); glVertex3f(55, 25, -60);
+
+    ////////////////////// FRONT WALL ///////////////////////
+
+//     glTexCoord2f(0.0, 2.0); glVertex3f(-55, 25, 0);
+//     glTexCoord2f(0.0, 0.0); glVertex3f(-55, -1, 0);
+//     glTexCoord2f(12.0, 0.0); glVertex3f(55, -1, 0);
+//     glTexCoord2f(12.0, 2.0); glVertex3f(55, 25, 0);
+
+    ////////////////////// LEFT WALL ///////////////////////
+
+     glTexCoord2f(0.0, 2.0); glVertex3f(-55, 25, -60);
+     glTexCoord2f(0.0, 0.0); glVertex3f(-55, -1, -60);
+     glTexCoord2f(12.0, 0.0); glVertex3f(-55, -1, 0);
+     glTexCoord2f(12.0, 2.0); glVertex3f(-55, 25, 0);
+
+    ////////////////////// RIGHT WALL ///////////////////////
+
+     glTexCoord2f(0.0, 2.0); glVertex3f(55, 25, -60);
+     glTexCoord2f(0.0, 0.0); glVertex3f(55, -1, -60);
+     glTexCoord2f(12.0, 0.0); glVertex3f(55, -1, 0);
+     glTexCoord2f(12.0, 2.0); glVertex3f(55, 25, 0);
+
+    glEnd();
 }
 
 void myTimer(int value) {
@@ -325,7 +350,9 @@ void myTimer(int value) {
     if (armRotation < -15) {
         armRotation += 3.5;
     } else {
-        t += .05;
+        if (t >= 0.0 && t <= 3.10) {
+            t += 0.05;
+        }
     }
 
     //Changing the swinging of the pendulum
@@ -357,40 +384,66 @@ void display(void)
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    gluLookAt(30 * sin(theta * (M_PI / 180)), cam_hgt, 30 * cos(theta * (M_PI / 180)), 0, 0, 0, 0, 1, 0);  //Camera position and orientation
+//    gluLookAt(30 * sin(theta * (M_PI / 180)), cam_hgt, 30 * cos(theta * (M_PI / 180)), 0, 0, 0, 0, 1, 0);  //Camera position and orientation
+    gluLookAt(eye_x, 5, eye_z,  look_x, 5, look_z,   0, 1, 0);
+
     glLightfv(GL_LIGHT0,GL_POSITION, lpos);   //Set light position
 
     glDisable(GL_LIGHTING);			//Disable lighting when drawing floor.
-    drawFloor();
 
     glEnable(GL_LIGHTING);			//Enable lighting when drawing the teapot
     glColor3f(0.0, 1.0, 1.0);
 
     drawFlooring();
+    drawWalls();
 
     glPushMatrix();
-        glTranslatef(-25., 2.25, -10.);
-        glRotatef(-90, 0, 1, 0);
+        glTranslatef(23., 2.25, -40.);
         drawCatapult();
         drawBoulder();
     glPopMatrix();
 
-//    glPushMatrix();
-//        glTranslatef(25., 0., -18.);
-//        drawPendulum();
-//    glPopMatrix();
+    glPushMatrix();
+        glTranslatef(40., 0., -15.);
+        glRotatef(-90, 0, 1, 0);
+        drawPendulum();
+    glPopMatrix();
 
-//    drawThrone();
+    glPushMatrix();
+        glTranslatef(-40., 0., -15.);
+        glRotatef(90, 0, 1, 0);
+        drawThrone();
+    glPopMatrix();
 
     glFlush();
 }
 
 //--Special keyboard event callbackfunction---------
-void special(int key, int x, int y) {
-    if(key == GLUT_KEY_UP) cam_hgt++;
-    else if(key == GLUT_KEY_DOWN) cam_hgt--;
-    else if(key == GLUT_KEY_RIGHT) theta++;
-    else if(key == GLUT_KEY_LEFT) theta--;
+//void special(int key, int x, int y) {
+//    if(key == GLUT_KEY_UP) cam_hgt++;
+//    else if(key == GLUT_KEY_DOWN) cam_hgt--;
+//    else if(key == GLUT_KEY_RIGHT) theta++;
+//    else if(key == GLUT_KEY_LEFT) theta--;
+//    glutPostRedisplay();
+//}
+
+void special(int key, int x, int y)
+{
+    if(key == GLUT_KEY_LEFT) angle -= 0.2;  //Change direction
+    else if(key == GLUT_KEY_RIGHT) angle += 0.2;
+    else if(key == GLUT_KEY_DOWN)
+    {  //Move backward
+        eye_x -= 0.2*sin(angle);
+        eye_z += 0.2*cos(angle);
+    }
+    else if(key == GLUT_KEY_UP)
+    { //Move forward
+        eye_x += 0.2*sin(angle);
+        eye_z -= 0.2*cos(angle);
+    }
+
+    look_x = eye_x + 100*sin(angle);
+    look_z = eye_z - 100*cos(angle);
     glutPostRedisplay();
 }
 
@@ -419,7 +472,7 @@ int main(int argc, char **argv)
 {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_SINGLE | GLUT_DEPTH);
-    glutInitWindowSize(800, 800);
+    glutInitWindowSize(1000, 1000);
     glutInitWindowPosition(0, 0);
     glutCreateWindow("OpenGL Museum");
     initialize();
