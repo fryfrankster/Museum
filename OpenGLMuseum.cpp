@@ -16,9 +16,10 @@ int stringAngle = -38;
 float armRotation = -75.;
 float t = 0.0;
 bool change = true;
+bool release = false;
 
 GLuint txId[2];   //Texture ids
-float angle=0, look_x, look_z=-1., eye_x, eye_z;  //Camera parameters
+float angle=0, look_x, look_z=-1., eye_x, eye_z = 20;  //Camera parameters
 
 
 struct objectPoint {
@@ -49,13 +50,17 @@ void loadTexture()
     glGenTextures(2, txId); 	// Create 2 texture ids
 
     glBindTexture(GL_TEXTURE_2D, txId[0]);  //Use this texture
-    loadTGA("Marble.tga");
+    loadTGA("Cobblestone.tga");
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);	//Set texture parameters
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+
+    glBindTexture(GL_TEXTURE_2D, txId[1]);  //Use this texture
+    loadTGA("Mosaiac.tga");
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);	//Set texture parameters
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 
     glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
 }
-
 
 
 //--Draws a grid of lines on the floor plane -------------------------------
@@ -284,76 +289,96 @@ void drawThrone(void) {
 }
 
 void drawFlooring(void) {
+    float white[4] = {1., 1., 1., 1.};
 
     glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, txId[0]);
+    glBindTexture(GL_TEXTURE_2D, txId[1]);
     glBegin(GL_QUADS);
         glNormal3f(0.0, 1.0, 0.0);   //Facing +y (Top side)
-        glTexCoord2f(0.0, 0.0); glVertex3f(-55., -1., 0.);
-        glTexCoord2f(3.0, 0.0); glVertex3f(55., -1., 0.);
-        glTexCoord2f(3.0, 2.0); glVertex3f(55., -1., -60.);
-        glTexCoord2f(0.0, 2.0); glVertex3f(-55., -1., -60.);
+        glTexCoord2f(0.0, 0.0); glVertex3f(-55, -1., 0);
+        glTexCoord2f(5.0, 0.0); glVertex3f(55, -1., 0);
+        glTexCoord2f(5.0, 3.0); glVertex3f(55, -1., -60);
+        glTexCoord2f(0.0, 3.0); glVertex3f(-55, -1., -60);
     glEnd();
     glDisable(GL_TEXTURE_2D);
 
-//    glEnable(GL_TEXTURE_2D);
-//    glBindTexture(GL_TEXTURE_2D, txId[0]);
+    //The floor is made up of several tiny squares on a 200x200 grid. Each square has a unit size.
 //    glBegin(GL_QUADS);
-//        glNormal3f(0.0, 1.0, 0.0);   //Facing +y (Top side)
-//        glVertex3f(-50., -1., 20.);
-//        glVertex3f(-50., -1., -50.);
-//        glVertex3f(-50., 25., 20.);
-//        glVertex3f(-50., 25., -50.);
+//    for(int i = -200; i < 200; i++)
+//    {
+//        for(int j = -200;  j < 200; j++)
+//        {
+//            glVertex3f(i, 0, j);
+//            glVertex3f(i, 0, j+1);
+//            glVertex3f(i+1, 0, j+1);
+//            glVertex3f(i+1, 0, j);
+//        }
+//    }
 //    glEnd();
-//    glDisable(GL_TEXTURE_2D);
 
 
 }
 
 void drawWalls() {
+
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, txId[0]);  //Use this texture
+
     glBegin(GL_QUADS);
 
     ////////////////////// BACK WALL ///////////////////////
 
-    glTexCoord2f(0.0, 2.0); glVertex3f(-55, 25, -60);
+    glTexCoord2f(0.0, 2.0); glVertex3f(-55, 35, -60);
     glTexCoord2f(0.0, 0.0); glVertex3f(-55, -1, -60);
-    glTexCoord2f(12.0, 0.0); glVertex3f(55, -1, -60);
-    glTexCoord2f(12.0, 2.0); glVertex3f(55, 25, -60);
+    glTexCoord2f(3.0, 0.0); glVertex3f(55, -1, -60);
+    glTexCoord2f(3.0, 2.0); glVertex3f(55, 35, -60);
 
     ////////////////////// FRONT WALL ///////////////////////
 
-//     glTexCoord2f(0.0, 2.0); glVertex3f(-55, 25, 0);
-//     glTexCoord2f(0.0, 0.0); glVertex3f(-55, -1, 0);
-//     glTexCoord2f(12.0, 0.0); glVertex3f(55, -1, 0);
-//     glTexCoord2f(12.0, 2.0); glVertex3f(55, 25, 0);
+     glTexCoord2f(0.0, 2.0); glVertex3f(-55, 35, 0);
+     glTexCoord2f(0.0, 0.0); glVertex3f(-55, -1, 0);
+     glTexCoord2f(3.0, 0.0); glVertex3f(55, -1, 0);
+     glTexCoord2f(3.0, 2.0); glVertex3f(55, 35, 0);
 
     ////////////////////// LEFT WALL ///////////////////////
 
-     glTexCoord2f(0.0, 2.0); glVertex3f(-55, 25, -60);
+     glTexCoord2f(0.0, 2.0); glVertex3f(-55, 35, -60);
      glTexCoord2f(0.0, 0.0); glVertex3f(-55, -1, -60);
-     glTexCoord2f(12.0, 0.0); glVertex3f(-55, -1, 0);
-     glTexCoord2f(12.0, 2.0); glVertex3f(-55, 25, 0);
+     glTexCoord2f(1.0, 0.0); glVertex3f(-55, -1, 0);
+     glTexCoord2f(1.0, 2.0); glVertex3f(-55, 35, 0);
 
     ////////////////////// RIGHT WALL ///////////////////////
 
-     glTexCoord2f(0.0, 2.0); glVertex3f(55, 25, -60);
+     glTexCoord2f(0.0, 2.0); glVertex3f(55, 35, -60);
      glTexCoord2f(0.0, 0.0); glVertex3f(55, -1, -60);
-     glTexCoord2f(12.0, 0.0); glVertex3f(55, -1, 0);
-     glTexCoord2f(12.0, 2.0); glVertex3f(55, 25, 0);
+     glTexCoord2f(1.0, 0.0); glVertex3f(55, -1, 0);
+     glTexCoord2f(1.0, 2.0); glVertex3f(55, 35, 0);
+
+     ///////////////////////// TOP //////////////////////////
+
+     glVertex3f(-55, 35, 0);
+     glVertex3f(55, 35, 0);
+     glVertex3f(55, 35, -60);
+     glVertex3f(-55, 35, -60);
 
     glEnd();
+    glDisable(GL_TEXTURE_2D);
+
 }
 
 void myTimer(int value) {
 
-    //Releasing the boulder from the catapult
-    if (armRotation < -15) {
-        armRotation += 3.5;
-    } else {
-        if (t >= 0.0 && t <= 3.10) {
-            t += 0.05;
+    //Releasing the boulder from the catapult when pressed
+    if (release) {
+        if (armRotation < -15) {
+            armRotation += 3.5;
+        } else {
+            if (t >= 0.0 && t <= 3.10) {
+                t += 0.05;
+            }
         }
     }
+
 
     //Changing the swinging of the pendulum
     if (change) {
@@ -368,9 +393,49 @@ void myTimer(int value) {
         }
     }
 
-
     glutPostRedisplay();
     glutTimerFunc(60, myTimer, 0);
+}
+
+//--Special keyboard event callbackfunction---------
+//void special(int key, int x, int y) {
+//    if(key == GLUT_KEY_UP) cam_hgt++;
+//    else if(key == GLUT_KEY_DOWN) cam_hgt--;
+//    else if(key == GLUT_KEY_RIGHT) theta++;
+//    else if(key == GLUT_KEY_LEFT) theta--;
+//    glutPostRedisplay();
+//}
+
+void special(int key, int x, int y)
+{
+    switch(key) {
+        case GLUT_KEY_LEFT:
+            angle -= 0.1;
+        break;
+        case GLUT_KEY_RIGHT:
+            angle += 0.1;
+        break;
+        case GLUT_KEY_DOWN:
+        //Move backward
+            eye_x -= 0.2*sin(angle);
+            eye_z += 0.2*cos(angle);
+        break;
+        case GLUT_KEY_UP:
+        //Move forward
+            eye_x += 0.2*sin(angle);
+            eye_z -= 0.2*cos(angle);
+        break;
+        case GLUT_KEY_F2:
+        //Releasing the catapult
+            release = true;
+        break;
+    }
+
+    look_x = eye_x + 100*sin(angle);
+    look_z = eye_z - 100*cos(angle);
+
+
+    glutPostRedisplay();
 }
 
 //--Display: ---------------------------------------------------------------
@@ -378,24 +443,23 @@ void myTimer(int value) {
 //--the scene.
 void display(void)
 {
-    float lpos[4] = {0., 10., 10., 1.0};  //light's position
+    float lpos[4] = {0., 35., -45., 1.0};  //light's position
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
 //    gluLookAt(30 * sin(theta * (M_PI / 180)), cam_hgt, 30 * cos(theta * (M_PI / 180)), 0, 0, 0, 0, 1, 0);  //Camera position and orientation
-    gluLookAt(eye_x, 5, eye_z,  look_x, 5, look_z,   0, 1, 0);
+    gluLookAt(eye_x, 8, eye_z,  look_x, 8, look_z,   0, 1, 0);
 
     glLightfv(GL_LIGHT0,GL_POSITION, lpos);   //Set light position
 
-    glDisable(GL_LIGHTING);			//Disable lighting when drawing floor.
-
-    glEnable(GL_LIGHTING);			//Enable lighting when drawing the teapot
-    glColor3f(0.0, 1.0, 1.0);
-
+//    glDisable(GL_LIGHTING);			//Disable lighting when drawing floor.
     drawFlooring();
     drawWalls();
+
+//    glEnable(GL_LIGHTING);			//Enable lighting when drawing the teapot
+    glColor3f(0.0, 1.0, 1.0);
 
     glPushMatrix();
         glTranslatef(23., 2.25, -40.);
@@ -418,52 +482,40 @@ void display(void)
     glFlush();
 }
 
-//--Special keyboard event callbackfunction---------
-//void special(int key, int x, int y) {
-//    if(key == GLUT_KEY_UP) cam_hgt++;
-//    else if(key == GLUT_KEY_DOWN) cam_hgt--;
-//    else if(key == GLUT_KEY_RIGHT) theta++;
-//    else if(key == GLUT_KEY_LEFT) theta--;
-//    glutPostRedisplay();
-//}
-
-void special(int key, int x, int y)
-{
-    if(key == GLUT_KEY_LEFT) angle -= 0.2;  //Change direction
-    else if(key == GLUT_KEY_RIGHT) angle += 0.2;
-    else if(key == GLUT_KEY_DOWN)
-    {  //Move backward
-        eye_x -= 0.2*sin(angle);
-        eye_z += 0.2*cos(angle);
-    }
-    else if(key == GLUT_KEY_UP)
-    { //Move forward
-        eye_x += 0.2*sin(angle);
-        eye_z -= 0.2*cos(angle);
-    }
-
-    look_x = eye_x + 100*sin(angle);
-    look_z = eye_z - 100*cos(angle);
-    glutPostRedisplay();
-}
 
 //----------------------------------------------------------------------
 void initialize(void)
 {
+    float grey[4] = {0.2, 0.2, 0.2, 1.0};
+    float white[4]  = {1.0, 1.0, 1.0, 1.0};
     loadTexture();
-
 
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
-    glEnable(GL_LIGHTING);		//Enable OpenGL states
+    glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
+    glEnable(GL_LIGHT1);
+
+    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
     glEnable(GL_COLOR_MATERIAL);
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_NORMALIZE);
+
+//	Define light's ambient, diffuse, specular properties
+    glLightfv(GL_LIGHT0, GL_AMBIENT, grey);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, white);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, white);
+
+    glLightfv(GL_LIGHT1, GL_AMBIENT, grey);
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, white);
+    glLightfv(GL_LIGHT1, GL_SPECULAR, white);
+    glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 30.0);
+    glLightf(GL_LIGHT1, GL_SPOT_EXPONENT,0.01);
+
+    glMaterialfv(GL_FRONT, GL_SPECULAR, white);
+    glMaterialf(GL_FRONT, GL_SHININESS, 50);
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glFrustum(-5.0, 5.0, -5.0, 5.0, 10.0, 1000.0);   //Camera Frustum
+    glFrustum(-5.0, 5.0, -7.0, 5.0, 10.0, 1000.0);   //Camera Frustum
 }
 
 
