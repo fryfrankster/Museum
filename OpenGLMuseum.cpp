@@ -1,7 +1,8 @@
 //  ========================================================================
-//  COSC363: OpenGL Museum
+//  COSC363: Medieval OpenGL Museum
 //
 //  FILE NAME: OpenGLMuseum.cpp
+//  AUTHOR: Frankie Oprenario
 //  ========================================================================
 
 #include <cmath>
@@ -18,7 +19,7 @@ bool change = true;
 bool release = false;
 
 GLuint txId[4];   //Texture ids
-float angle=0, look_x, look_z=-1., eye_x, eye_z = 0;  //Camera parameters
+float angle=0, look_x, look_z=-1., eye_x, eye_z = 65;  //Camera parameters
 
 
 struct objectPoint {
@@ -198,54 +199,114 @@ void drawCatapult(void) {
     glPopMatrix();
 }
 
-void drawDoor(void) {
+void drawCatapultShadow(void) {
+    glColor4f(0.2, 0.2, 0.2, 1.0);
 
-    glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, txId[3]);
+    //Four wheels
+    glPushMatrix();
+        glTranslatef(0., 0., -5);
+        glutSolidCylinder(2.25, 0.75, 15.0, 30.0);
+    glPopMatrix();
 
-        glBegin(GL_QUADS);
-        glNormal3f(0.0, 0.0, 1.0);   //Facing +z (Front side)
-            glTexCoord2f(0.0, 0.0); glVertex3f(-12, 18, 1);
-            glTexCoord2f(0.0, 1.0); glVertex3f(12, 18, 1);
-            glTexCoord2f(1.0, 1.0); glVertex3f(12, 35, 1);
-            glTexCoord2f(1.0, 0.0); glVertex3f(-12, 35, 1);
+    glPushMatrix();
+        glTranslatef(12.5, 0., -5);
+        glutSolidCylinder(2.25, 0.75, 15.0, 30.0);
+    glPopMatrix();
 
-        glNormal3f(0.0, 0.0, -1.0);   //Facing +z (Front side)
-            glTexCoord2f(0.0, 0.0); glVertex3f(-12, 18, 1);
-            glTexCoord2f(0.0, 1.0); glVertex3f(12, 18, 1);
-            glTexCoord2f(1.0, 1.0); glVertex3f(12, 35, 1);
-            glTexCoord2f(1.0, 0.0); glVertex3f(-12, 35, 1);
-        glEnd();
+    glPushMatrix();
+        glTranslatef(0., 0., 5.);
+        glutSolidCylinder(2.25, 0.75, 15.0, 30.0);
+    glPopMatrix();
 
-    glDisable(GL_TEXTURE_2D);
+    glPushMatrix();
+        glTranslatef(12.5, 0., 5.);
+        glutSolidCylinder(2.25, 0.75, 15.0, 30.0);
+    glPopMatrix();
 
-    glColor3f(0.5, 0.35, 0.1);
-    glBegin(GL_QUADS);
-    glNormal3f(-1.0, 0.0, 0.0);   //Facing +z (Front side)
-        glVertex3f(-12, 18, 1);
-        glVertex3f(-12, 18, 0);
-        glVertex3f(-12, 35, 0);
-        glVertex3f(-12, 35, 1);
+    //Centre axles for the wheels
+    glPushMatrix();
+        glTranslatef(0., 0., 0.0);
+        glScalef(1.0, 1.0, 10.);
+        glutSolidCube(1.0);
+    glPopMatrix();
 
-    glNormal3f(1.0, 0.0, 0.0);   //Facing +z (Front side)
-        glVertex3f(12, 18, 1);
-        glVertex3f(12, 18, 0);
-        glVertex3f(12, 35, 0);
-        glVertex3f(12, 35, 1);
+    glPushMatrix();
+        glTranslatef(12.5, 0., 0.0);
+        glScalef(1.0, 1.0, 10.);
+        glutSolidCube(1.0);
+    glPopMatrix();
 
-    glNormal3f(0.0, -1.0, 0.0);
-        glVertex3f(-12, 18, 1);
-        glVertex3f(12, 18, 1);
-        glVertex3f(12, 18, 0);
-        glVertex3f(-12, 18, 0);
+    //Side panels
+    glPushMatrix();
+        glTranslatef(7.0, 2., 4.5);
+        glScalef(18.75, 3.0, 1.0);
+        glutSolidCube(1.0);
+    glPopMatrix();
 
-    glNormal3f(0.0, 1.0, 0.0);
-        glVertex3f(-12, 35, 1);
-        glVertex3f(12, 35, 1);
-        glVertex3f(12, 35, 0);
-        glVertex3f(-12, 35, 0);
+    glPushMatrix();
+        glTranslatef(7.0, 2., -3.75);
+        glScalef(18.75, 3.0, 1.0);
+        glutSolidCube(1.0);
+    glPopMatrix();
 
-    glEnd();
+    //Frame
+    glPushMatrix();
+        glTranslatef(4.25, 7., 4.5);
+        glScalef(2.0, 7.0, 1.0);
+        glutSolidCube(1.0);
+    glPopMatrix();
+
+    glPushMatrix();
+        glTranslatef(-1.0, 3.5, 5.0);
+        glRotatef(-37.0, 0, 0, 1);
+        glTranslatef(1.0, -3.5, -5.0);
+        glTranslatef(0., 7., 4.5);
+        glScalef(2.0, 7.0, 1.0);
+        glutSolidCube(1.0);
+    glPopMatrix();
+
+    glPushMatrix();
+        glTranslatef(4.25, 7.,-3.75);
+        glScalef(2.0, 7.0, 1.0);
+        glutSolidCube(1.0);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(-1.0, 3.5, -3.25);
+        glRotatef(-37.0, 0, 0, 1);
+        glTranslatef(1.0, -3.5, 3.25);
+        glTranslatef(0., 7., -3.75);
+        glScalef(2.0, 7.0, 1.0);
+        glutSolidCube(1.0);
+    glPopMatrix();
+
+    glPushMatrix();
+        glTranslatef(4.75, 9.5, 0.4);
+        glScalef(1.0, 2.0, 7.5);
+        glutSolidCube(1.0);
+    glPopMatrix();
+
+    glPushMatrix();
+        glTranslatef(5.75, 9.5, 0.25);
+        glScalef(1.0, 2.0, 3.5);
+        glutSolidCube(1.0);
+    glPopMatrix();
+
+    glPushMatrix();
+        glTranslatef(4.75, 1.0, -3.75);
+        glutSolidCylinder(.5, 8.0, 15.0, 30.0);
+    glPopMatrix();
+
+    //Arm
+    glPushMatrix();
+        glTranslatef(4.75, 1.0, 0.25);
+        glRotatef(armRotation, 0, 0, 1);
+        glTranslatef(-4.75, -1.0, -0.25);
+
+        glTranslatef(4.75, 7.0, 0.25);
+        glScalef(1.0, 13.0, 2.0);
+        glutSolidCube(1.0);
+    glPopMatrix();
 }
 
 void drawBoulder(void) {
@@ -259,6 +320,21 @@ void drawBoulder(void) {
 
         glTranslatef(2.5 + distance.dx, distance.dy, 0.25);
         glColor3f(0.4, 0.4, 0.4);
+        glutSolidSphere(1.75, 10.0, 10.0);
+    glPopMatrix();
+}
+
+void drawBoulderShadow(void) {
+
+    struct objectPoint distance = throwBall();
+    glColor4f(0.2, 0.2, 0.2, 1.0);
+
+    glPushMatrix();
+        glTranslatef(4.75, 1.0, 0.25);
+        glRotatef(armRotation, 0, 0, 1);
+        glTranslatef(-4.75, -1.0, -0.25);
+
+        glTranslatef(2.5 + distance.dx, distance.dy, 0.25);
         glutSolidSphere(1.75, 10.0, 10.0);
     glPopMatrix();
 }
@@ -324,6 +400,66 @@ void drawPendulum(void) {
     glPopMatrix();
 }
 
+void drawPendulumShadow(void) {
+
+    //frame
+    glColor4f(0.2, 0.2, 0.2, 1.0);
+    glPushMatrix();
+        glTranslatef(5., 8., 0.);
+        glScalef(1.5, 14.0, 1.0);
+        glutSolidCube(1.0);
+    glPopMatrix();
+
+    //top
+    glPushMatrix();
+        glTranslatef(5., 14.5, 2.5);
+        glScalef(1.5, 1.0, 5.0);
+        glutSolidCube(1.0);
+    glPopMatrix();
+
+    //base
+    glPushMatrix();
+        glTranslatef(5., 0., 0.);
+        glScalef(6.0, 2.0, 2.0);
+        glutSolidCube(1.0);
+    glPopMatrix();
+
+    //ring
+    glPushMatrix();
+        glTranslatef(5., 13.25, 3.5);
+        glRotatef(90, 0, 1, 0);
+        glutSolidTorus(0.3, 0.6, 5., 15.0);
+    glPopMatrix();
+
+    //string
+    glColor3f(0., 0., 0.);
+    glPushMatrix();
+        glTranslatef(5., 12.75, 3.5);
+        glutSolidTorus(0.15, 0.3, 5., 15.0);
+    glPopMatrix();
+
+
+    glPushMatrix();
+        glTranslatef(5., 12.35, 3.5);
+        glRotatef(stringAngle, 0, 0, 1);
+        glTranslatef(-5., -12.35, -3.5);
+
+        glTranslatef(5., 12.35, 3.5);
+        glRotatef(90, 1, 0, 0);
+        glutSolidCylinder(0.1, 8., 8., 20.);
+    glPopMatrix();
+
+    glPushMatrix();
+        glTranslatef(5., 12.35, 3.5);
+        glRotatef(stringAngle, 0, 0, 1);
+        glTranslatef(-5., -12.35, -3.5);
+
+        glTranslatef(5., 4.35, 3.5);
+        glRotatef(90, 1, 0, 0);
+        glutSolidSphere(0.5, 15., 20);
+    glPopMatrix();
+}
+
 void drawThrone(void) {
     glColor3f(0.5, 0.35, 0.1);
     glPushMatrix();
@@ -350,6 +486,44 @@ void drawThrone(void) {
         glutSolidCylinder(3.25, 1., 20., 20.);
     glPopMatrix();
 
+}
+
+void drawThroneShadow(void) {
+    glColor4f(0.2, 0.2, 0.2, 1.0);
+    glPushMatrix();
+        glTranslatef(0., 5.75, 0.);
+        glScalef(6.5, 13., 1.0);
+        glutSolidCube(1.0);
+    glPopMatrix();
+
+    glPushMatrix();
+        glTranslatef(0., 3.75, 3.);
+        glScalef(6.5, 1.0, 5.0);
+        glutSolidCube(1.0);
+    glPopMatrix();
+
+    glPushMatrix();
+        glTranslatef(0., 1.25, 5.);
+        glScalef(6.5, 4.0, 1.0);
+        glutSolidCube(1.0);
+    glPopMatrix();
+
+    glPushMatrix();
+        glTranslatef(0., 12.25, -0.5);
+        glScalef(1., 1.5, 1.);
+        glutSolidCylinder(3.25, 1., 20., 20.);
+    glPopMatrix();
+}
+
+void drawOutdoorFloor(void) {
+    glColor3f(0, 1, 0);
+    glBegin(GL_QUADS);
+        glNormal3f(0.0, 1.0, 0.0);   //Facing +y (Top side)
+        glVertex3f(-55, -1., 0);
+        glVertex3f(55, -1., 0);
+        glVertex3f(55, -1., 30);
+        glVertex3f(-55, -1., 30);
+    glEnd();
 }
 
 void drawFlooring(void) {
@@ -408,6 +582,7 @@ void drawWalls() {
     glDisable(GL_TEXTURE_2D);
 
     //Roof
+    glColor3f(0.5, 0.35, 0.1);
     glBegin(GL_QUADS);
         glNormal3f(0.0, -1.0, 0.0);
         glVertex3f(-55, 35, 0);
@@ -415,7 +590,56 @@ void drawWalls() {
         glVertex3f(55, 35, -60);
         glVertex3f(-55, 35, -60);
     glEnd();
+}
 
+void drawDoor(void) {
+
+    glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, txId[3]);
+
+        glBegin(GL_QUADS);
+        glNormal3f(0.0, 0.0, 1.0);   //Facing +z (Front side)
+            glTexCoord2f(0.0, 0.0); glVertex3f(-12, 18, 1);
+            glTexCoord2f(0.0, 1.0); glVertex3f(12, 18, 1);
+            glTexCoord2f(1.0, 1.0); glVertex3f(12, 35, 1);
+            glTexCoord2f(1.0, 0.0); glVertex3f(-12, 35, 1);
+
+        glNormal3f(0.0, 0.0, -1.0);   //Facing +z (Front side)
+            glTexCoord2f(0.0, 0.0); glVertex3f(-12, 18, 1);
+            glTexCoord2f(0.0, 1.0); glVertex3f(12, 18, 1);
+            glTexCoord2f(1.0, 1.0); glVertex3f(12, 35, 1);
+            glTexCoord2f(1.0, 0.0); glVertex3f(-12, 35, 1);
+        glEnd();
+
+    glDisable(GL_TEXTURE_2D);
+
+    glColor3f(0.5, 0.35, 0.1);
+    glBegin(GL_QUADS);
+    glNormal3f(-1.0, 0.0, 0.0);   //Facing +z (Front side)
+        glVertex3f(-12, 18, 1);
+        glVertex3f(-12, 18, 0);
+        glVertex3f(-12, 35, 0);
+        glVertex3f(-12, 35, 1);
+
+    glNormal3f(1.0, 0.0, 0.0);   //Facing +z (Front side)
+        glVertex3f(12, 18, 1);
+        glVertex3f(12, 18, 0);
+        glVertex3f(12, 35, 0);
+        glVertex3f(12, 35, 1);
+
+    glNormal3f(0.0, -1.0, 0.0);
+        glVertex3f(-12, 18, 1);
+        glVertex3f(12, 18, 1);
+        glVertex3f(12, 18, 0);
+        glVertex3f(-12, 18, 0);
+
+    glNormal3f(0.0, 1.0, 0.0);
+        glVertex3f(-12, 35, 1);
+        glVertex3f(12, 35, 1);
+        glVertex3f(12, 35, 0);
+        glVertex3f(-12, 35, 0);
+
+    glEnd();
 }
 
 void myTimer(int value) {
@@ -493,11 +717,11 @@ void display(void)
     glLoadIdentity();
     gluLookAt(eye_x, 8, eye_z,  look_x, 8, look_z,   0, 1, 0);
     glLightfv(GL_LIGHT0,GL_POSITION, lpos1);   //Set light position
-//    glColor3f(0.0, 1.0, 1.0);
 
     glDisable(GL_LIGHTING);
 
     drawFlooring();
+    drawOutdoorFloor();
     drawWalls();
     drawDoor();
 
@@ -505,8 +729,8 @@ void display(void)
         glMultMatrixf(shadowMat);
         glTranslatef(23., 2.25, -40.);
         glColor4f(0.2, 0.2, 0.2, 1.0);
-        drawCatapult();
-        drawBoulder();
+        drawCatapultShadow();
+        drawBoulderShadow();
     glPopMatrix();
 
     glEnable(GL_LIGHTING);
@@ -523,14 +747,13 @@ void display(void)
         glMultMatrixf(shadowMat);
         glTranslatef(40., -1., -15.);
         glRotatef(-90, 0, 1, 0);
-        glColor4f(0.2, 0.2, 0.2, 1.0);
-        drawPendulum();
+        drawPendulumShadow();
     glPopMatrix();
 
     glEnable(GL_LIGHTING);
 
     glPushMatrix();
-        glTranslatef(40., 0., -15.);
+        glTranslatef(40., 1., -15.);
         glRotatef(-90, 0, 1, 0);
         drawPendulum();
     glPopMatrix();
@@ -541,10 +764,7 @@ void display(void)
         glMultMatrixf(shadowMat);
         glTranslatef(-40., -1., -15.);
         glRotatef(90, 0, 1, 0);
-        glColor4f(0.2, 0.2, 0.2, 1.0);
-//        glEnable(GL_COLOR);
-        glDisable(GL_COLOR);
-        drawThrone();
+        drawThroneShadow();
     glPopMatrix();
 
     glEnable(GL_LIGHTING);
