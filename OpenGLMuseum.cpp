@@ -1,8 +1,7 @@
 //  ========================================================================
-//  COSC363: Computer Graphics (2020);  University of Canterbury.
+//  COSC363: OpenGL Museum
 //
 //  FILE NAME: OpenGLMuseum.cpp
-//  See Lab01.pdf for details
 //  ========================================================================
 
 #include <cmath>
@@ -18,8 +17,8 @@ float t = 0.0;
 bool change = true;
 bool release = false;
 
-GLuint txId[2];   //Texture ids
-float angle=0, look_x, look_z=-1., eye_x, eye_z = 20;  //Camera parameters
+GLuint txId[4];   //Texture ids
+float angle=0, look_x, look_z=-1., eye_x, eye_z = 80;  //Camera parameters
 
 
 struct objectPoint {
@@ -47,7 +46,7 @@ struct objectPoint throwBall() {
 //--------------------------------------------------------------------------------
 void loadTexture()
 {
-    glGenTextures(2, txId); 	// Create 2 texture ids
+    glGenTextures(4, txId); 	// Create 2 texture ids
 
     glBindTexture(GL_TEXTURE_2D, txId[0]);  //Use this texture
     loadTGA("Cobblestone.tga");
@@ -56,6 +55,16 @@ void loadTexture()
 
     glBindTexture(GL_TEXTURE_2D, txId[1]);  //Use this texture
     loadTGA("Mosaiac.tga");
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);	//Set texture parameters
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+
+    glBindTexture(GL_TEXTURE_2D, txId[2]);  //Use this texture
+    loadTGA("Wood.tga");
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);	//Set texture parameters
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+
+    glBindTexture(GL_TEXTURE_2D, txId[3]);  //Use this texture
+    loadTGA("Gate.tga");
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);	//Set texture parameters
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 
@@ -187,6 +196,56 @@ void drawCatapult(void) {
         glColor3f(0.5, 0.35, 0.1);
         glutSolidCube(1.0);
     glPopMatrix();
+}
+
+void drawDoor(void) {
+
+    glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, txId[3]);
+
+        glBegin(GL_QUADS);
+        glNormal3f(0.0, 0.0, 1.0);   //Facing +z (Front side)
+            glTexCoord2f(0.0, 0.0); glVertex3f(-12, 18, 1);
+            glTexCoord2f(0.0, 1.0); glVertex3f(12, 18, 1);
+            glTexCoord2f(1.0, 1.0); glVertex3f(12, 35, 1);
+            glTexCoord2f(1.0, 0.0); glVertex3f(-12, 35, 1);
+
+        glNormal3f(0.0, 0.0, -1.0);   //Facing +z (Front side)
+            glTexCoord2f(0.0, 0.0); glVertex3f(-12, 18, 1);
+            glTexCoord2f(0.0, 1.0); glVertex3f(12, 18, 1);
+            glTexCoord2f(1.0, 1.0); glVertex3f(12, 35, 1);
+            glTexCoord2f(1.0, 0.0); glVertex3f(-12, 35, 1);
+        glEnd();
+
+    glDisable(GL_TEXTURE_2D);
+
+    glColor3f(0.5, 0.35, 0.1);
+    glBegin(GL_QUADS);
+    glNormal3f(-1.0, 0.0, 0.0);   //Facing +z (Front side)
+        glVertex3f(-12, 18, 1);
+        glVertex3f(-12, 18, 0);
+        glVertex3f(-12, 35, 0);
+        glVertex3f(-12, 35, 1);
+
+    glNormal3f(1.0, 0.0, 0.0);   //Facing +z (Front side)
+        glVertex3f(12, 18, 1);
+        glVertex3f(12, 18, 0);
+        glVertex3f(12, 35, 0);
+        glVertex3f(12, 35, 1);
+
+    glNormal3f(0.0, -1.0, 0.0);
+        glVertex3f(-12, 18, 1);
+        glVertex3f(12, 18, 1);
+        glVertex3f(12, 18, 0);
+        glVertex3f(-12, 18, 0);
+
+    glNormal3f(0.0, 1.0, 0.0);
+        glVertex3f(-12, 35, 1);
+        glVertex3f(12, 35, 1);
+        glVertex3f(12, 35, 0);
+        glVertex3f(-12, 35, 0);
+
+    glEnd();
 }
 
 void drawBoulder(void) {
@@ -327,42 +386,49 @@ void drawWalls() {
     glBegin(GL_QUADS);
 
     ////////////////////// BACK WALL ///////////////////////
-
+    glNormal3f(0.0, 0.0, 1.0);
     glTexCoord2f(0.0, 2.0); glVertex3f(-55, 35, -60);
     glTexCoord2f(0.0, 0.0); glVertex3f(-55, -1, -60);
     glTexCoord2f(3.0, 0.0); glVertex3f(55, -1, -60);
     glTexCoord2f(3.0, 2.0); glVertex3f(55, 35, -60);
 
     ////////////////////// FRONT WALL ///////////////////////
+    glNormal3f(0.0, 0.0, -1.0);
 
      glTexCoord2f(0.0, 2.0); glVertex3f(-55, 35, 0);
      glTexCoord2f(0.0, 0.0); glVertex3f(-55, -1, 0);
+     glTexCoord2f(3.0, 0.0); glVertex3f(-10, -1, 0);
+     glTexCoord2f(3.0, 2.0); glVertex3f(-10, 35, 0);
+
+     glNormal3f(0.0, 0.0, -1.0);
+     glTexCoord2f(0.0, 2.0); glVertex3f(10, 35, 0);
+     glTexCoord2f(0.0, 0.0); glVertex3f(10, -1, 0);
      glTexCoord2f(3.0, 0.0); glVertex3f(55, -1, 0);
      glTexCoord2f(3.0, 2.0); glVertex3f(55, 35, 0);
 
     ////////////////////// LEFT WALL ///////////////////////
-
+     glNormal3f(0.0, 1.0, 0.0);
      glTexCoord2f(0.0, 2.0); glVertex3f(-55, 35, -60);
      glTexCoord2f(0.0, 0.0); glVertex3f(-55, -1, -60);
      glTexCoord2f(1.0, 0.0); glVertex3f(-55, -1, 0);
      glTexCoord2f(1.0, 2.0); glVertex3f(-55, 35, 0);
 
     ////////////////////// RIGHT WALL ///////////////////////
-
+     glNormal3f(0.0, -1.0, 0.0);
      glTexCoord2f(0.0, 2.0); glVertex3f(55, 35, -60);
      glTexCoord2f(0.0, 0.0); glVertex3f(55, -1, -60);
      glTexCoord2f(1.0, 0.0); glVertex3f(55, -1, 0);
      glTexCoord2f(1.0, 2.0); glVertex3f(55, 35, 0);
-
-     ///////////////////////// TOP //////////////////////////
-
-     glVertex3f(-55, 35, 0);
-     glVertex3f(55, 35, 0);
-     glVertex3f(55, 35, -60);
-     glVertex3f(-55, 35, -60);
-
     glEnd();
     glDisable(GL_TEXTURE_2D);
+
+    glBegin(GL_QUADS);
+    glNormal3f(0.0, -1.0, 0.0);
+        glVertex3f(-55, 35, 0);
+        glVertex3f(55, 35, 0);
+        glVertex3f(55, 35, -60);
+        glVertex3f(-55, 35, -60);
+    glEnd();
 
 }
 
@@ -457,6 +523,7 @@ void display(void)
 //    glDisable(GL_LIGHTING);			//Disable lighting when drawing floor.
     drawFlooring();
     drawWalls();
+    drawDoor();
 
 //    glEnable(GL_LIGHTING);			//Enable lighting when drawing the teapot
     glColor3f(0.0, 1.0, 1.0);
@@ -486,36 +553,52 @@ void display(void)
 //----------------------------------------------------------------------
 void initialize(void)
 {
-    float grey[4] = {0.2, 0.2, 0.2, 1.0};
-    float white[4]  = {1.0, 1.0, 1.0, 1.0};
-    loadTexture();
+//    float grey[4] = {0.2, 0.2, 0.2, 1.0};
+//    float white[4]  = {1.0, 1.0, 1.0, 1.0};
+//    loadTexture();
 
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+//    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
-    glEnable(GL_LIGHT1);
+//    glEnable(GL_LIGHTING);
+//    glEnable(GL_LIGHT0);
+//    glEnable(GL_LIGHT1);
 
-    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
-    glEnable(GL_COLOR_MATERIAL);
+//    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+//    glEnable(GL_COLOR_MATERIAL);
 
 //	Define light's ambient, diffuse, specular properties
-    glLightfv(GL_LIGHT0, GL_AMBIENT, grey);
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, white);
-    glLightfv(GL_LIGHT0, GL_SPECULAR, white);
+//    glLightfv(GL_LIGHT0, GL_AMBIENT, grey);
+//    glLightfv(GL_LIGHT0, GL_DIFFUSE, white);
+//    glLightfv(GL_LIGHT0, GL_SPECULAR, white);
 
-    glLightfv(GL_LIGHT1, GL_AMBIENT, grey);
-    glLightfv(GL_LIGHT1, GL_DIFFUSE, white);
-    glLightfv(GL_LIGHT1, GL_SPECULAR, white);
-    glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 30.0);
-    glLightf(GL_LIGHT1, GL_SPOT_EXPONENT,0.01);
+//    glLightfv(GL_LIGHT1, GL_AMBIENT, grey);
+//    glLightfv(GL_LIGHT1, GL_DIFFUSE, white);
+//    glLightfv(GL_LIGHT1, GL_SPECULAR, white);
+//    glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 30.0);
+//    glLightf(GL_LIGHT1, GL_SPOT_EXPONENT,0.01);
 
-    glMaterialfv(GL_FRONT, GL_SPECULAR, white);
-    glMaterialf(GL_FRONT, GL_SHININESS, 50);
+//    glMaterialfv(GL_FRONT, GL_SPECULAR, white);
+//    glMaterialf(GL_FRONT, GL_SHININESS, 50);
 
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glFrustum(-5.0, 5.0, -7.0, 5.0, 10.0, 1000.0);   //Camera Frustum
+//    glMatrixMode(GL_PROJECTION);
+//    glLoadIdentity();
+//    glFrustum(-5.0, 5.0, -7.0, 5.0, 10.0, 1000.0);   //Camera Frustum
+
+
+        loadTexture();
+
+
+        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+
+        glEnable(GL_LIGHTING);		//Enable OpenGL states
+        glEnable(GL_LIGHT0);
+        glEnable(GL_COLOR_MATERIAL);
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_NORMALIZE);
+
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glFrustum(-5.0, 5.0, -5.0, 5.0, 10.0, 1000.0);   //Camera Frustum
 }
 
 
