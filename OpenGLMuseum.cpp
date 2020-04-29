@@ -18,7 +18,7 @@ bool change = true;
 bool release = false;
 
 GLuint txId[4];   //Texture ids
-float angle=0, look_x, look_z=-1., eye_x, eye_z = 80;  //Camera parameters
+float angle=0, look_x, look_z=-1., eye_x, eye_z = 0;  //Camera parameters
 
 
 struct objectPoint {
@@ -264,11 +264,12 @@ void drawBoulder(void) {
 }
 
 void drawPendulum(void) {
+
     //frame
+    glColor3f(0.5, 0.35, 0.1);
     glPushMatrix();
         glTranslatef(5., 8., 0.);
         glScalef(1.5, 14.0, 1.0);
-        glColor3f(0.5, 0.35, 0.1);
         glutSolidCube(1.0);
     glPopMatrix();
 
@@ -276,7 +277,6 @@ void drawPendulum(void) {
     glPushMatrix();
         glTranslatef(5., 14.5, 2.5);
         glScalef(1.5, 1.0, 5.0);
-        glColor3f(0.5, 0.35, 0.1);
         glutSolidCube(1.0);
     glPopMatrix();
 
@@ -284,23 +284,21 @@ void drawPendulum(void) {
     glPushMatrix();
         glTranslatef(5., 0., 0.);
         glScalef(6.0, 2.0, 2.0);
-        glColor3f(0.5, 0.35, 0.1);
         glutSolidCube(1.0);
     glPopMatrix();
 
     //ring
+    glColor3f(0.4, 0.4, 0.4);
     glPushMatrix();
         glTranslatef(5., 13.25, 3.5);
         glRotatef(90, 0, 1, 0);
-        glColor3f(0.4, 0.4, 0.4);
         glutSolidTorus(0.3, 0.6, 5., 15.0);
     glPopMatrix();
 
     //string
-
+    glColor3f(0., 0., 0.);
     glPushMatrix();
         glTranslatef(5., 12.75, 3.5);
-        glColor3f(0., 0., 0.);
         glutSolidTorus(0.15, 0.3, 5., 15.0);
     glPopMatrix();
 
@@ -312,30 +310,37 @@ void drawPendulum(void) {
 
         glTranslatef(5., 12.35, 3.5);
         glRotatef(90, 1, 0, 0);
-        glColor3f(0., 0., 0.);
         glutSolidCylinder(0.1, 8., 8., 20.);
+    glPopMatrix();
+
+    glPushMatrix();
+        glTranslatef(5., 12.35, 3.5);
+        glRotatef(stringAngle, 0, 0, 1);
+        glTranslatef(-5., -12.35, -3.5);
+
+        glTranslatef(5., 4.35, 3.5);
+        glRotatef(90, 1, 0, 0);
+        glutSolidSphere(0.5, 15., 20);
     glPopMatrix();
 }
 
 void drawThrone(void) {
+    glColor3f(0.5, 0.35, 0.1);
     glPushMatrix();
         glTranslatef(0., 5.75, 0.);
         glScalef(6.5, 13., 1.0);
-        glColor3f(0.5, 0.35, 0.1);
         glutSolidCube(1.0);
     glPopMatrix();
 
     glPushMatrix();
         glTranslatef(0., 3.75, 3.);
         glScalef(6.5, 1.0, 5.0);
-        glColor3f(0.5, 0.35, 0.1);
         glutSolidCube(1.0);
     glPopMatrix();
 
     glPushMatrix();
         glTranslatef(0., 1.25, 5.);
         glScalef(6.5, 4.0, 1.0);
-        glColor3f(0.5, 0.35, 0.1);
         glutSolidCube(1.0);
     glPopMatrix();
 
@@ -348,8 +353,6 @@ void drawThrone(void) {
 }
 
 void drawFlooring(void) {
-    float white[4] = {1., 1., 1., 1.};
-
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, txId[1]);
     glBegin(GL_QUADS);
@@ -360,22 +363,6 @@ void drawFlooring(void) {
         glTexCoord2f(0.0, 3.0); glVertex3f(-55, -1., -60);
     glEnd();
     glDisable(GL_TEXTURE_2D);
-
-    //The floor is made up of several tiny squares on a 200x200 grid. Each square has a unit size.
-//    glBegin(GL_QUADS);
-//    for(int i = -200; i < 200; i++)
-//    {
-//        for(int j = -200;  j < 200; j++)
-//        {
-//            glVertex3f(i, 0, j);
-//            glVertex3f(i, 0, j+1);
-//            glVertex3f(i+1, 0, j+1);
-//            glVertex3f(i+1, 0, j);
-//        }
-//    }
-//    glEnd();
-
-
 }
 
 void drawWalls() {
@@ -384,46 +371,45 @@ void drawWalls() {
     glBindTexture(GL_TEXTURE_2D, txId[0]);  //Use this texture
 
     glBegin(GL_QUADS);
+        //Back Wall
+        glNormal3f(0.0, 0.0, 1.0);
+        glTexCoord2f(0.0, 2.0); glVertex3f(-55, 35, -60);
+        glTexCoord2f(0.0, 0.0); glVertex3f(-55, -1, -60);
+        glTexCoord2f(3.0, 0.0); glVertex3f(55, -1, -60);
+        glTexCoord2f(3.0, 2.0); glVertex3f(55, 35, -60);
 
-    ////////////////////// BACK WALL ///////////////////////
-    glNormal3f(0.0, 0.0, 1.0);
-    glTexCoord2f(0.0, 2.0); glVertex3f(-55, 35, -60);
-    glTexCoord2f(0.0, 0.0); glVertex3f(-55, -1, -60);
-    glTexCoord2f(3.0, 0.0); glVertex3f(55, -1, -60);
-    glTexCoord2f(3.0, 2.0); glVertex3f(55, 35, -60);
+        //Front Wall
+        glNormal3f(0.0, 0.0, -1.0);
+        glTexCoord2f(0.0, 2.0); glVertex3f(-55, 35, 0);
+        glTexCoord2f(0.0, 0.0); glVertex3f(-55, -1, 0);
+        glTexCoord2f(1.0, 0.0); glVertex3f(-10, -1, 0);
+        glTexCoord2f(1.0, 2.0); glVertex3f(-10, 35, 0);
 
-    ////////////////////// FRONT WALL ///////////////////////
-    glNormal3f(0.0, 0.0, -1.0);
+        glNormal3f(0.0, 0.0, -1.0);
+        glTexCoord2f(0.0, 2.0); glVertex3f(10, 35, 0);
+        glTexCoord2f(0.0, 0.0); glVertex3f(10, -1, 0);
+        glTexCoord2f(1.0, 0.0); glVertex3f(55, -1, 0);
+        glTexCoord2f(1.0, 2.0); glVertex3f(55, 35, 0);
 
-     glTexCoord2f(0.0, 2.0); glVertex3f(-55, 35, 0);
-     glTexCoord2f(0.0, 0.0); glVertex3f(-55, -1, 0);
-     glTexCoord2f(3.0, 0.0); glVertex3f(-10, -1, 0);
-     glTexCoord2f(3.0, 2.0); glVertex3f(-10, 35, 0);
+        //Left Wall
+        glNormal3f(0.0, 1.0, 0.0);
+        glTexCoord2f(0.0, 2.0); glVertex3f(-55, 35, -60);
+        glTexCoord2f(0.0, 0.0); glVertex3f(-55, -1, -60);
+        glTexCoord2f(1.0, 0.0); glVertex3f(-55, -1, 0);
+        glTexCoord2f(1.0, 2.0); glVertex3f(-55, 35, 0);
 
-     glNormal3f(0.0, 0.0, -1.0);
-     glTexCoord2f(0.0, 2.0); glVertex3f(10, 35, 0);
-     glTexCoord2f(0.0, 0.0); glVertex3f(10, -1, 0);
-     glTexCoord2f(3.0, 0.0); glVertex3f(55, -1, 0);
-     glTexCoord2f(3.0, 2.0); glVertex3f(55, 35, 0);
-
-    ////////////////////// LEFT WALL ///////////////////////
-     glNormal3f(0.0, 1.0, 0.0);
-     glTexCoord2f(0.0, 2.0); glVertex3f(-55, 35, -60);
-     glTexCoord2f(0.0, 0.0); glVertex3f(-55, -1, -60);
-     glTexCoord2f(1.0, 0.0); glVertex3f(-55, -1, 0);
-     glTexCoord2f(1.0, 2.0); glVertex3f(-55, 35, 0);
-
-    ////////////////////// RIGHT WALL ///////////////////////
-     glNormal3f(0.0, -1.0, 0.0);
-     glTexCoord2f(0.0, 2.0); glVertex3f(55, 35, -60);
-     glTexCoord2f(0.0, 0.0); glVertex3f(55, -1, -60);
-     glTexCoord2f(1.0, 0.0); glVertex3f(55, -1, 0);
-     glTexCoord2f(1.0, 2.0); glVertex3f(55, 35, 0);
-    glEnd();
+        //Right Wall
+        glNormal3f(0.0, -1.0, 0.0);
+        glTexCoord2f(0.0, 2.0); glVertex3f(55, 35, -60);
+        glTexCoord2f(0.0, 0.0); glVertex3f(55, -1, -60);
+        glTexCoord2f(1.0, 0.0); glVertex3f(55, -1, 0);
+        glTexCoord2f(1.0, 2.0); glVertex3f(55, 35, 0);
+        glEnd();
     glDisable(GL_TEXTURE_2D);
 
+    //Roof
     glBegin(GL_QUADS);
-    glNormal3f(0.0, -1.0, 0.0);
+        glNormal3f(0.0, -1.0, 0.0);
         glVertex3f(-55, 35, 0);
         glVertex3f(55, 35, 0);
         glVertex3f(55, 35, -60);
@@ -463,15 +449,6 @@ void myTimer(int value) {
     glutTimerFunc(60, myTimer, 0);
 }
 
-//--Special keyboard event callbackfunction---------
-//void special(int key, int x, int y) {
-//    if(key == GLUT_KEY_UP) cam_hgt++;
-//    else if(key == GLUT_KEY_DOWN) cam_hgt--;
-//    else if(key == GLUT_KEY_RIGHT) theta++;
-//    else if(key == GLUT_KEY_LEFT) theta--;
-//    glutPostRedisplay();
-//}
-
 void special(int key, int x, int y)
 {
     switch(key) {
@@ -500,7 +477,6 @@ void special(int key, int x, int y)
     look_x = eye_x + 100*sin(angle);
     look_z = eye_z - 100*cos(angle);
 
-
     glutPostRedisplay();
 }
 
@@ -509,24 +485,31 @@ void special(int key, int x, int y)
 //--the scene.
 void display(void)
 {
-    float lpos[4] = {0., 35., -45., 1.0};  //light's position
+    float lpos1[4] = {0., 35., -45., 1.0};  //light's position
+    float shadowMat[16] = {lpos1[1], 0, 0, 0, lpos1[0], 0, -lpos1[2], -1, 0, 0, lpos1[1], 0, 0, 0, 0, lpos1[1]};
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-
-//    gluLookAt(30 * sin(theta * (M_PI / 180)), cam_hgt, 30 * cos(theta * (M_PI / 180)), 0, 0, 0, 0, 1, 0);  //Camera position and orientation
     gluLookAt(eye_x, 8, eye_z,  look_x, 8, look_z,   0, 1, 0);
+    glLightfv(GL_LIGHT0,GL_POSITION, lpos1);   //Set light position
+//    glColor3f(0.0, 1.0, 1.0);
 
-    glLightfv(GL_LIGHT0,GL_POSITION, lpos);   //Set light position
+    glDisable(GL_LIGHTING);
 
-//    glDisable(GL_LIGHTING);			//Disable lighting when drawing floor.
     drawFlooring();
     drawWalls();
     drawDoor();
 
-//    glEnable(GL_LIGHTING);			//Enable lighting when drawing the teapot
-    glColor3f(0.0, 1.0, 1.0);
+    glPushMatrix();
+        glMultMatrixf(shadowMat);
+        glTranslatef(23., 2.25, -40.);
+        glColor4f(0.2, 0.2, 0.2, 1.0);
+        drawCatapult();
+        drawBoulder();
+    glPopMatrix();
+
+    glEnable(GL_LIGHTING);
 
     glPushMatrix();
         glTranslatef(23., 2.25, -40.);
@@ -534,11 +517,37 @@ void display(void)
         drawBoulder();
     glPopMatrix();
 
+    glDisable(GL_LIGHTING);
+
+    glPushMatrix();
+        glMultMatrixf(shadowMat);
+        glTranslatef(40., -1., -15.);
+        glRotatef(-90, 0, 1, 0);
+        glColor4f(0.2, 0.2, 0.2, 1.0);
+        drawPendulum();
+    glPopMatrix();
+
+    glEnable(GL_LIGHTING);
+
     glPushMatrix();
         glTranslatef(40., 0., -15.);
         glRotatef(-90, 0, 1, 0);
         drawPendulum();
     glPopMatrix();
+
+    glDisable(GL_LIGHTING);
+
+    glPushMatrix();
+        glMultMatrixf(shadowMat);
+        glTranslatef(-40., -1., -15.);
+        glRotatef(90, 0, 1, 0);
+        glColor4f(0.2, 0.2, 0.2, 1.0);
+//        glEnable(GL_COLOR);
+        glDisable(GL_COLOR);
+        drawThrone();
+    glPopMatrix();
+
+    glEnable(GL_LIGHTING);
 
     glPushMatrix();
         glTranslatef(-40., 0., -15.);
@@ -553,41 +562,7 @@ void display(void)
 //----------------------------------------------------------------------
 void initialize(void)
 {
-//    float grey[4] = {0.2, 0.2, 0.2, 1.0};
-//    float white[4]  = {1.0, 1.0, 1.0, 1.0};
-//    loadTexture();
-
-//    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-
-//    glEnable(GL_LIGHTING);
-//    glEnable(GL_LIGHT0);
-//    glEnable(GL_LIGHT1);
-
-//    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
-//    glEnable(GL_COLOR_MATERIAL);
-
-//	Define light's ambient, diffuse, specular properties
-//    glLightfv(GL_LIGHT0, GL_AMBIENT, grey);
-//    glLightfv(GL_LIGHT0, GL_DIFFUSE, white);
-//    glLightfv(GL_LIGHT0, GL_SPECULAR, white);
-
-//    glLightfv(GL_LIGHT1, GL_AMBIENT, grey);
-//    glLightfv(GL_LIGHT1, GL_DIFFUSE, white);
-//    glLightfv(GL_LIGHT1, GL_SPECULAR, white);
-//    glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 30.0);
-//    glLightf(GL_LIGHT1, GL_SPOT_EXPONENT,0.01);
-
-//    glMaterialfv(GL_FRONT, GL_SPECULAR, white);
-//    glMaterialf(GL_FRONT, GL_SHININESS, 50);
-
-//    glMatrixMode(GL_PROJECTION);
-//    glLoadIdentity();
-//    glFrustum(-5.0, 5.0, -7.0, 5.0, 10.0, 1000.0);   //Camera Frustum
-
-
         loadTexture();
-
-
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
         glEnable(GL_LIGHTING);		//Enable OpenGL states
